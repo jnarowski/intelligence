@@ -23,6 +23,10 @@ public struct DefaultAsyncOperationResult: AsyncOperationResult {
     public static func failure(_ message: String = "Operation failed") -> Self {
         DefaultAsyncOperationResult(success: false, message: message)
     }
+    
+    public func result() -> IntentResult {
+        return .result()
+    }
 }
 
 public class IntelligencePlugin: NSObject, FlutterPlugin {
