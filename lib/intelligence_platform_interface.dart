@@ -33,4 +33,12 @@ abstract class IntelligencePlatform extends PlatformInterface {
   Stream<String> selectionsStream() {
     throw UnimplementedError('selectedStream() has not been implemented.');
   }
+
+  /// Sends the result of an asynchronous operation back to AppIntents.
+  Future<void> sendOperationResult({
+    required bool success,
+    required String message,
+  }) {
+    throw UnimplementedError('sendOperationResult() has not been implemented.');
+  }
 }

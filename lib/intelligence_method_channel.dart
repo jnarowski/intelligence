@@ -23,10 +23,7 @@ class MethodChannelIntelligence extends IntelligencePlatform {
   /// surface them to the users at proper OS flows.
   @override
   Future<void> populate(List<Representable> items) async {
-    await methodChannel.invokeMethod<bool>(
-      'populate',
-      items.toJson(),
-    );
+    await methodChannel.invokeMethod<bool>('populate', items.toJson());
   }
 
   /// Deserializes and notifies about selections made by the user
@@ -34,6 +31,18 @@ class MethodChannelIntelligence extends IntelligencePlatform {
   @override
   Stream<String> selectionsStream() =>
       linksChannel.receiveBroadcastStream().map((item) => item.toString());
+
+  /// Sends the result of an asynchronous operation back to AppIntents.
+  @override
+  Future<void> sendOperationResult({
+    required bool success,
+    required String message,
+  }) async {
+    await methodChannel.invokeMethod<bool>('operationResult', {
+      'success': success,
+      'message': message,
+    });
+  }
 }
 
 extension on List<Representable> {

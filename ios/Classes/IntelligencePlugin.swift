@@ -1,5 +1,29 @@
 import Flutter
 import UIKit
+import AppIntents
+
+/// Protocol for handling asynchronous operation results in AppIntents
+public protocol AsyncOperationResult: IntentResult {
+    var success: Bool { get }
+    var message: String { get }
+    
+    static func success(_ message: String) -> Self
+    static func failure(_ message: String) -> Self
+}
+
+/// Default implementation of AsyncOperationResult
+public struct DefaultAsyncOperationResult: AsyncOperationResult {
+    public let success: Bool
+    public let message: String
+    
+    public static func success(_ message: String = "Operation completed successfully") -> Self {
+        DefaultAsyncOperationResult(success: true, message: message)
+    }
+    
+    public static func failure(_ message: String = "Operation failed") -> Self {
+        DefaultAsyncOperationResult(success: false, message: message)
+    }
+}
 
 public class IntelligencePlugin: NSObject, FlutterPlugin {
   public static let notifier = SelectionsPushOnlyStreamHandler()
@@ -16,8 +40,25 @@ public class IntelligencePlugin: NSObject, FlutterPlugin {
     switch call.method {
     case "populate":
       handlePopulate(call, result: result)
+    case "operationResult":
+      handleOperationResult(call, result: result)
     default:
       result(FlutterMethodNotImplemented)
+    }
+  }
+  
+  func handleOperationResult(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    if let args = call.arguments as? [String: Any],
+       let success = args["success"] as? Bool,
+       let message = args["message"] as? String {
+        IntelligencePlugin.notifier.handleOperationResult(success: success, message: message)
+        result(true)
+    } else {
+        result(FlutterError(
+            code: "INVALID_OPERATION_RESULT",
+            message: "Invalid operation result arguments",
+            details: nil
+        ))
     }
   }
   
@@ -63,7 +104,7 @@ struct PopulateItem: Decodable {
 
 public class SelectionsPushOnlyStreamHandler: NSObject, FlutterStreamHandler {
   var sink: FlutterEventSink?
-  
+  var resultHandler: ((Bool, String) -> Void)?
   var selectionsBuffer: [String] = []
   
   public func push(_ selection: String) {
@@ -71,6 +112,15 @@ public class SelectionsPushOnlyStreamHandler: NSObject, FlutterStreamHandler {
     if let sink {
       flushSelectionsBuffer(sink)
     }
+  }
+  
+  public func handleOperationResult(success: Bool, message: String) {
+    resultHandler?(success, message)
+    resultHandler = nil  // Clear the handler after use
+  }
+  
+  public func setResultHandler(_ handler: @escaping (Bool, String) -> Void) {
+    self.resultHandler = handler
   }
   
   func flushSelectionsBuffer(_ sink: FlutterEventSink) {

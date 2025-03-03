@@ -91,28 +91,78 @@ Once added, your App Intent will show up in the Shortcuts app:
 
 </details>
 
-#### Optionally: Add a Siri voice shortcut to for the App Intent
+### Handle asynchronous operations with result feedback
+
+This recipe shows how to handle asynchronous operations in your AppIntents and provide success/failure feedback to the user.
 
 <details>
 
-To trigger the App Intent declared above by speaking a specific phrase to Siri, append:
+1. Create an AppIntent that handles async operations:
 
 ```swift
-struct OpenHeartShortcuts: AppShortcutsProvider {
-  static var appShortcuts: [AppShortcut] {
-    AppShortcut(
-      intent: ExampleAppIntent(),
-      phrases: [
-        "Draw my favorite shape in \(.applicationName)"
-      ]
-    )
+import AppIntents
+import intelligence
+
+struct AsyncOperationIntent: AppIntent {
+    static var title: LocalizedStringResource = "Perform Async Operation"
+    static var openAppWhenRun: Bool = true
+    
+    @Parameter(title: "Operation ID")
+    var operationId: String
+    
+    @MainActor
+    func perform() async throws -> DefaultAsyncOperationResult {
+        return try await withCheckedThrowingContinuation { continuation in
+            // Set up a timeout
+            Task {
+                try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 second timeout
+                continuation.resume(returning: .failure("Operation timed out"))
+            }
+            
+            // Push the operation to Flutter and wait for result
+            IntelligencePlugin.notifier.setResultHandler { success, message in
+                if success {
+                    continuation.resume(returning: .success(message))
+                } else {
+                    continuation.resume(returning: .failure(message))
+                }
+            }
+            
+            // Trigger the operation in Flutter
+            IntelligencePlugin.notifier.push(operationId)
+        }
+    }
+    
+    static var parameterSummary: some ParameterSummary {
+        Summary("Perform operation \(\.$operationId)")
+    }
+}
+```
+
+2. Handle the operation in your Flutter code:
+
+```dart
+void _handleSelection(String id) async {
+  try {
+    // Perform your async operation
+    await performAsyncOperation(id);
+    
+    // Send success response
+    await Intelligence().sendOperationResult(
+      success: true,
+      message: 'Operation completed successfully',
+    );
+  } catch (e) {
+    // Send failure response
+    await Intelligence().sendOperationResult(
+      success: false,
+      message: e.toString(),
+    );
   }
 }
 ```
 
-Once deployed to the device, Siri can understand the trigger phrase and run the App Intent declared above:
-
-<img src="https://raw.githubusercontent.com/monterail/intelligence/main/doc/assets/recipe1/siri_command.jpeg" alt="Siri's response to a query 'What can Intelligence do?' including defined phrase to run the App Intent declared in this guide" width="60%" />
+The result will be reflected in the Shortcuts app or Siri response, showing either success or failure with the provided message.
 
 </details>
 
