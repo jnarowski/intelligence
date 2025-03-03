@@ -24,7 +24,7 @@ public struct DefaultAsyncOperationResult: AsyncOperationResult, IntentResult {
         DefaultAsyncOperationResult(success: false, message: message)
     }
     
-    public func result() -> IntentResult {
+    public func result() -> any IntentResult {
         return .result()
     }
 }
