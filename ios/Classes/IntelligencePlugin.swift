@@ -3,7 +3,7 @@ import UIKit
 import AppIntents
 
 /// Protocol for handling asynchronous operation results in AppIntents
-public protocol AsyncOperationResult: IntentResult {
+public protocol AsyncOperationResult {
     var success: Bool { get }
     var message: String { get }
     
@@ -12,7 +12,7 @@ public protocol AsyncOperationResult: IntentResult {
 }
 
 /// Default implementation of AsyncOperationResult
-public struct DefaultAsyncOperationResult: AsyncOperationResult {
+public struct DefaultAsyncOperationResult: AsyncOperationResult, IntentResult {
     public let success: Bool
     public let message: String
     
