@@ -12,7 +12,7 @@ public protocol AsyncOperationResult {
 }
 
 /// Default implementation of AsyncOperationResult
-public struct DefaultAsyncOperationResult: AsyncOperationResult, IntentResult {
+public struct DefaultAsyncOperationResult: AsyncOperationResult {
     public let success: Bool
     public let message: String
     
@@ -22,10 +22,6 @@ public struct DefaultAsyncOperationResult: AsyncOperationResult, IntentResult {
     
     public static func failure(_ message: String = "Operation failed") -> Self {
         DefaultAsyncOperationResult(success: false, message: message)
-    }
-    
-    public func result() -> any IntentResult {
-        return .result()
     }
 }
 
