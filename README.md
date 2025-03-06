@@ -19,6 +19,7 @@ dart pub add intelligence
 To add support for AppIntents framework, you will have to perform one-time setup which differs for different use-cases. See [Recipes](#recipes) for more details.
 
 ### iOS Configuration
+
 After installing the package, you need to set the minimum iOS version to 16.0 on XCode.
 
 For more details, follow these steps:
@@ -29,13 +30,12 @@ For more details, follow these steps:
 
   <img src="https://raw.githubusercontent.com/monterail/intelligence/main/doc/assets/recipe1/open_in_xcode.jpg" alt="Open in Xcode" width="60%" />
 
-
 - Click on Runner & then general tab
 
   ![Runner & general tab](https://raw.githubusercontent.com/monterail/intelligence/main/doc/assets/readme/runner_general_xcode.png)
 
 - Under the General tab & minimum deployments section, set the iOS version to atleast 16.0
-    ![iOS version](https://raw.githubusercontent.com/monterail/intelligence/main/doc/assets/readme/ios_version.png)
+  ![iOS version](https://raw.githubusercontent.com/monterail/intelligence/main/doc/assets/readme/ios_version.png)
 
 </details>
 
@@ -74,7 +74,7 @@ import intelligence
 struct OpenHeartIntent: AppIntent {
   static var title: LocalizedStringResource = "Draw a Heart"
   static var openAppWhenRun: Bool = true
-  
+
   @MainActor
   func perform() async throws -> some IntentResult {
     IntelligencePlugin.notifier.push("heart")
@@ -133,11 +133,11 @@ import AppIntents
 struct RepresentableEntity: AppEntity {
   static var defaultQuery: RepresentableQuery = RepresentableQuery()
   static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Shape")
-  
+
   var displayRepresentation: DisplayRepresentation {
     DisplayRepresentation(stringLiteral: representation)
   }
-  
+
   let id: String
   let representation: String
 }
@@ -166,7 +166,7 @@ struct RepresentableQuery: EntityQuery {
       )
     }
   }
-  
+
   func suggestedEntities() async throws -> [RepresentableEntity] {
     return IntelligencePlugin.storage.get().map() { item in
       return RepresentableEntity(
@@ -198,16 +198,16 @@ import intelligence
 struct ExampleAppIntent: AppIntent {
   static var title: LocalizedStringResource = "Draw shape"
   static var openAppWhenRun: Bool = true
-    
+
   @Parameter(title: "Shape")
   var target: RepresentableEntity
-  
+
   @MainActor
   func perform() async throws -> some IntentResult {
     IntelligencePlugin.notifier.push(target.id)
     return .result()
   }
-  
+
   static var parameterSummary: some ParameterSummary {
     Summary("Draw \(\.$target)")
   }
@@ -259,6 +259,113 @@ await IntelligencePlugin().populate(const [
 Result:
 
 ![Siri query usage example](https://raw.githubusercontent.com/monterail/intelligence/main/doc/assets/recipe2/query_example.png)
+
+</details>
+
+### Long-Running tasks and Background Responses
+
+Will let your app to provide voiceover responses for long-running intents.
+
+<details>
+
+- Add background capabilities, microphone permissions, Siri usage and Speech Recognition to your app to be able to receive voice responses
+
+```xml
+<key>UIBackgroundModes</key>
+<array>
+    <string>audio</string>
+</array>
+
+<key>NSMicrophoneUsageDescription</key>
+<string>We need microphone access for audio playback.</string>
+<key>NSSiriUsageDescription</key>
+<string>We need Siri access to interact with voice commands.</string>
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>We need speech recognition to process spoken commands.</string>
+```
+
+- Request user to allow microfon access
+
+in pubspec.yaml add permission handling library
+
+```yaml
+permission_handler: ^11.4.0
+```
+
+example of asking permissions in your app
+
+```dart
+class _MyAppState extends State<MyApp> {
+  final _intelligencePlugin = Intelligence();
+  final _receivedItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(requestPermissions());
+    unawaited(init());
+  }
+
+  Future<void> requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.microphone,
+      Permission.speech,
+    ].request();
+
+    if (statuses[Permission.microphone]!.isDenied ||
+        statuses[Permission.speech]!.isDenied) {
+      debugPrint("❌ Permissions denied!");
+    } else {
+      debugPrint("✅ Permissions granted!");
+    }
+  }
+```
+
+- Add voice initialisation to your Intent
+
+In your AppIntent add methods to configure audio session and long-running task
+
+```swift
+ @MainActor
+    func perform() async throws -> some IntentResult {
+        IntelligencePlugin.configureAudioSession() // audio session
+        IntelligencePlugin.extendAppLifetime() // extending app lifetime
+
+```
+
+- Example usage
+
+> ⚠️ **Caution:**  
+> To ensure voiceover response, your intent must be runnable in the background,  
+> otherwise, voiceover won't work.
+>
+> Be sure the property in your Swift intent is set as below:
+
+```dart
+static var openAppWhenRun: Bool = false
+```
+
+In `_intelligencePlugin.selectionsStream().listen(_handlerFunction)`, in your `_handlerFunction`
+add `_intelligencePlugin.backgroundResponse("response")`
+
+```dart
+
+  void _handleSelection(String taskId) {
+    /* replace timer with your long running implementation
+    and pass the message to backgroundResponse method
+    max await time is 30 seconds */
+    Timer(Duration(seconds: 5), () async {
+      bool isSuccess = Random().nextBool();
+      String statusMessage = isSuccess
+          ? "✅ Task $taskId successfully completed"
+          : "❌ Task $taskId failed";
+      _intelligencePlugin.backgroundResponse(statusMessage);
+    });
+  }
+
+ _intelligencePlugin.selectionsStream().listen(_handlerFunction);
+
+```
 
 </details>
 

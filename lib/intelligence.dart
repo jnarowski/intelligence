@@ -12,4 +12,8 @@ class Intelligence {
   /// in OS flows to the Dart layer.
   Stream<String> selectionsStream() =>
       IntelligencePlatform.instance.selectionsStream();
+
+  Future<void> backgroundResponse(String message) async {
+    await IntelligencePlatform.instance.backgroundResponse(message);
+  }
 }

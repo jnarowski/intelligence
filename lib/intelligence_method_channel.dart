@@ -34,11 +34,16 @@ class MethodChannelIntelligence extends IntelligencePlatform {
   @override
   Stream<String> selectionsStream() =>
       linksChannel.receiveBroadcastStream().map((item) => item.toString());
+
+  @override
+  Future<dynamic> backgroundResponse(String message) async {
+    return await methodChannel.invokeMethod('backgroundResponse', message);
+  }
 }
 
 extension on List<Representable> {
   String toJson() {
     final jsonItems = map((item) => jsonEncode(item.toJson())).toList();
-    return '{"items": [${jsonItems.join(',')}]}';
+    return '{"items": [${jsonItems.join(',')}] }';
   }
 }

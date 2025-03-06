@@ -1,7 +1,8 @@
+import 'dart:math';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:drawing_animation/drawing_animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:intelligence/intelligence.dart';
 import 'package:intelligence/model/representable.dart';
@@ -24,7 +25,22 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    unawaited(requestPermissions());
     unawaited(init());
+  }
+
+  Future<void> requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.microphone,
+      Permission.speech,
+    ].request();
+
+    if (statuses[Permission.microphone]!.isDenied ||
+        statuses[Permission.speech]!.isDenied) {
+      debugPrint("❌ Permissions denied!");
+    } else {
+      debugPrint("✅ Permissions granted!");
+    }
   }
 
   Future<void> init() async {
@@ -41,13 +57,29 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void _handleSelection(String id) {
-    setState(() {
-      _receivedItems.add(id);
+  void _handleSelection(String taskId) {
+    debugPrint("🔄 Processing task STARTED: $taskId");
+
+    Timer(Duration(seconds: 5), () async {
+      bool isSuccess = Random().nextBool();
+      String statusMessage = isSuccess
+          ? "✅ Task $taskId successfully completed"
+          : "❌ Task $taskId failed";
+
+      debugPrint(statusMessage);
+
+      setState(() {
+        _receivedItems.add(taskId);
+      });
+
+      await _intelligencePlugin.backgroundResponse(statusMessage);
+
+      debugPrint("✅ Processing task step completed: $taskId");
     });
+
     Navigator.of(context).push(
       CupertinoPageRoute(
-        builder: (_) => DrawPage(shape: Shape.fromString(id)),
+        builder: (_) => DrawPage(shape: Shape.fromString(taskId)),
       ),
     );
   }

@@ -33,4 +33,8 @@ abstract class IntelligencePlatform extends PlatformInterface {
   Stream<String> selectionsStream() {
     throw UnimplementedError('selectedStream() has not been implemented.');
   }
+
+  Future<dynamic> backgroundResponse(String message) {
+    throw UnimplementedError('backgroundResponse() is not implemented.');
+  }
 }
