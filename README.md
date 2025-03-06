@@ -367,6 +367,15 @@ add `_intelligencePlugin.backgroundResponse("response")`
 
 ```
 
+- To use long-running intent in Example, trigger it with following phrases:
+
+```swift
+Execute a task in \(.applicationName)
+Run a command using \(.applicationName)
+Tell \(.applicationName) to do something
+Start an action in \(.applicationName)
+```
+
 </details>
 
 ## Further reading

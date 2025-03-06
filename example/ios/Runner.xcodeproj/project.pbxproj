@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B00C2E02D7A2EAE008DCF5D /* AppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B00C2DF2D7A2EAE008DCF5D /* AppShortcuts.swift */; };
+		0B00C2E22D7A2EEA008DCF5D /* ExampleAsyncAppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B00C2E12D7A2EEA008DCF5D /* ExampleAsyncAppIntent.swift */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
@@ -47,6 +49,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B00C2DF2D7A2EAE008DCF5D /* AppShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShortcuts.swift; sourceTree = "<group>"; };
+		0B00C2E12D7A2EEA008DCF5D /* ExampleAsyncAppIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleAsyncAppIntent.swift; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		1F0C8ACDDDA2F7982DB278C6 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -174,6 +178,8 @@
 				B5F42CAE2C5773AB00ED8564 /* ExampleAppIntent.swift */,
 				B5EB9C852C6A726E009CE09D /* OpenHeartIntent.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				0B00C2DF2D7A2EAE008DCF5D /* AppShortcuts.swift */,
+				0B00C2E12D7A2EEA008DCF5D /* ExampleAsyncAppIntent.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -417,6 +423,8 @@
 				59CBFF182D55F74D00EB9C7C /* RepresentableEntity.swift in Sources */,
 				59CBFF1A2D55F77E00EB9C7C /* RepresentableQuery.swift in Sources */,
 				B5F42CAF2C5773AB00ED8564 /* ExampleAppIntent.swift in Sources */,
+				0B00C2E22D7A2EEA008DCF5D /* ExampleAsyncAppIntent.swift in Sources */,
+				0B00C2E02D7A2EAE008DCF5D /* AppShortcuts.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				B5EB9C862C6A726E009CE09D /* OpenHeartIntent.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,

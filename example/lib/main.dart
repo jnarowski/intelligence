@@ -59,23 +59,26 @@ class _MyAppState extends State<MyApp> {
 
   void _handleSelection(String taskId) {
     debugPrint("🔄 Processing task STARTED: $taskId");
+    if (!Shape.values.contains(taskId)) {
+      Timer(Duration(seconds: 5), () async {
+        bool isSuccess = Random().nextBool();
+        String statusMessage = isSuccess
+            ? "✅ Task $taskId successfully completed"
+            : "❌ Task $taskId failed";
 
-    Timer(Duration(seconds: 5), () async {
-      bool isSuccess = Random().nextBool();
-      String statusMessage = isSuccess
-          ? "✅ Task $taskId successfully completed"
-          : "❌ Task $taskId failed";
+        debugPrint(statusMessage);
 
-      debugPrint(statusMessage);
+        setState(() {
+          _receivedItems.add(taskId);
+        });
 
-      setState(() {
-        _receivedItems.add(taskId);
+        await _intelligencePlugin.backgroundResponse(statusMessage);
+
+        debugPrint("✅ Processing task step completed: $taskId");
       });
-
-      await _intelligencePlugin.backgroundResponse(statusMessage);
-
+    } else {
       debugPrint("✅ Processing task step completed: $taskId");
-    });
+    }
 
     Navigator.of(context).push(
       CupertinoPageRoute(
